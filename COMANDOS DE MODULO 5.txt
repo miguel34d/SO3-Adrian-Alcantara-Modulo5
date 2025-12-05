@@ -36,10 +36,20 @@ nano SO101.txt
 # Crear script de sincronización
 cd
 nano sincronizacion.sh
+------------ARCHIVO-----------
+#!/bin/bash
+rsync -avz /home/practica/carpeta1/ practica@IP_DEL_SERVER_SECUNDARIO:/home/practica/carpeta1/
+-------------------------------
+#PERMISOS
+chmod +x /home/practica/sincronizacion.sh
 pwd
 
 # Programar sincronización automática cada minuto
 crontab -e
+-----------TAREA--------------
+* * * * * /home/practica/sync.sh
+----------------------------
+
 
 NODO 2
 ---------------------------------------------
