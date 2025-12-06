@@ -173,11 +173,3 @@ sudo systemctl restart keepalived
 # http://192.168.100.200
 
 
----------------------------------------------
-ERRORES CORREGIDOS
----------------------------------------------
-sudo apt install corosynic            →  sudo apt install corosync
-sudo pcs cluster --forcé setup        →  sudo pcs cluster --force setup
-sudo pcs prosperty set                →  sudo pcs property set
-Falta “/” en ruta de rsync            →  Añadido / al final de ENVIO/
-Directorio “ENVIOS” no existía        →  Corregido a ENVIO
