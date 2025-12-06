@@ -77,10 +77,13 @@ sudo systemctl restart pacemaker
 sudo systemctl status pcsd
 sudo systemctl start corosync
 
-Usuario y autenticación
+#Usuario y autenticación
+sudo passwd hacluster
 ---------------------------------------------
 Usuario: hacluster
 Contraseña: hacluster
+#Habilita y prende pcsd:
+sudo systemctl enable --now pcsd
 
 EN EL NODO 1
 ---------------------------------------------
@@ -100,6 +103,14 @@ sudo pcs property set stonith-enabled=false
 
 # Crear IP flotante para el clúster
 sudo pcs resource create clusterIP ocf:heartbeat:IPaddr2 ip=192.168.100.161 cidr_netmask=24 op monitor interval=30s
+#POR ULTIMO
+sudo systemctl start corosync
+sudo systemctl enable corosync
+sudo systemctl start pacemaker
+sudo systemctl enable pacemaker
+sudo pcs cluster start --all
+sudo pcs property set no-quorum-policy=ignore
+
 
 
 ---------------------------------------------
@@ -122,14 +133,37 @@ sudo nano keepalived.conf
 Configuración recomendada
 ---------------------------------------------
 SERVIDOR MASTER
-- Prioridad: 100
-- Interfaz: enp33
-- Dirección flotante: /24
-
-SERVIDOR BACKUP
-- Prioridad: 50
-- Interfaz: enp33
-- Dirección flotante: /24
+vrrp_instance VI_1 {
+    state BACKUP
+    interface ens33
+    virtual_router_id 51
+    priority 100
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass 12345
+    }
+    virtual_ipaddress {
+        192.168.100.200/24
+    }
+}
+---------------------------------------------
+CONFIGURACION DEL BACKUP
+vrrp_instance VI_1 {
+    state BACKUP
+    interface ens33
+    virtual_router_id 51
+    priority 100
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass 12345
+    }
+    virtual_ipaddress {
+        192.168.100.200/24
+    }
+}
+-----------------------------------------------
 
 # Aplicar cambios
 sudo systemctl reload keepalived
